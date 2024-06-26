@@ -1,30 +1,3 @@
-// import {
-//   BrowserRouter as Router,
-//   Routes,
-//   Route,
-// } from "react-router-dom";
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-// import './App.css'
-// import CadastrarProduto from './pages/CadastrarProduto'
-// import Header from './pages/Header'
-
-// function App() {
-//   const [route, setRoute] = useState("/");
-
-//   return (
-//     <Router>
-//       <Routes>
-//         <Route path='/' element={<CadastrarProduto setRoute={setRoute}/>} />
-//         <Route path='/header' element={<Header setRoute={setRoute}/>} />
-//       </Routes>
-//     </Router>
-//   )
-// }
-
-// export default App
-
 import { createBrowserRouter } from 'react-router-dom'
 import { RouterProvider } from 'react-router'
 import LandingPageLayout from './layouts/LandingPageLayout'
@@ -33,36 +6,63 @@ import CadastrarProduto from './pages/CadastrarProduto'
 import ConsultarCotacoes from './pages/ConsultarCotacoes'
 import CadastrarCotacao from './pages/CadastrarCotacao'
 import CadastrarFornecedor from './pages/CadastrarFornecedor'
+import { useEffect, useState } from 'react'
+import { listaFornecedores } from './infra/fornecedores'
+import { listaProdutos } from './infra/produtos'
+import { listaCotacoes } from './infra/cotacao'
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <LandingPageLayout />,
-    children: [
-      {
-        path: '/cadastro',
-        children: [
-          {
-            path: '/cadastro/cotacao',
-            element: <CadastrarCotacao />
-          },
-          {
-            path: '/cadastro/fornecedor',
-            element: <CadastrarFornecedor />
-          },
-          {
-            path: '/cadastro/produto',
-            element: <CadastrarProduto />
-          },
-        ]
-      },
-      {
-        path: '/cotacoes',
-        element: <ConsultarCotacoes />
-      }
+export default function App() { 
 
-    ],
-  },
-])
+  const [fornecedores, setFornecedores] = useState([]);
+  const [produtos, setProdutos] = useState([]);
+  const [cotacoes, setCotacoes] = useState([]);
 
-export default function App() { return (<RouterProvider router={router} />) }
+  const router = createBrowserRouter([
+    {
+      path: '/',
+      element: <LandingPageLayout />,
+      children: [
+        {
+          path: '/cadastro',
+          children: [
+            {
+              path: '/cadastro/cotacao',
+              element: <CadastrarCotacao produtos={produtos} fornecedores={fornecedores}/>
+            },
+            {
+              path: '/cadastro/fornecedor',
+              element: <CadastrarFornecedor fornecedores={fornecedores}/>
+            },
+            {
+              path: '/cadastro/produto',
+              element: <CadastrarProduto produtos={produtos}/>
+            },
+          ]
+        },
+        {
+          path: '/cotacoes',
+          element: <ConsultarCotacoes cotacoes={cotacoes}/>
+        }
+  
+      ],
+    },
+  ])
+
+  useEffect(() => {
+    async function fetchData() {
+      const novoArrFornecedores = await listaFornecedores();
+      setFornecedores(novoArrFornecedores);
+
+      const novoArrProdutos = await listaProdutos();
+      setProdutos(novoArrProdutos);
+
+      const novoArrCotacoes = await listaCotacoes();
+      setCotacoes(novoArrCotacoes);
+    }
+  
+    fetchData();
+  }, [])
+
+  return (<RouterProvider router={router} />) 
+}
+

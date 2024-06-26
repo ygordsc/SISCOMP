@@ -1,35 +1,53 @@
 import { Button, Grid, TextField } from "../../components"
 import { useForm } from "react-hook-form"
-import { FormControl, getAppBarUtilityClass } from "@mui/material"
+import { inserirProduto, listaProdutos } from "../../infra/produtos";
+import { listaFornecedores } from "../../infra/fornecedores";
 
-export default function CadastrarCotacao() {
-    const { register, handleSubmit, formState: { errors }, reset } = useForm()
+export default function CadastrarCotacao({ produtos = [], fornecedores = [] }) {
+    const { register, handleSubmit, reset } = useForm()
 
-    function submit() {
+    async function submit(dados) {
+        console.log(dados)
+        await inserirProduto(dados);
         reset()
     }
 
     return (
-        //<h1>Cadastro de Cotações</h1>
-        <Grid sx={{ height: "70vh", justifyContent: "center" }} container>
-            <Grid sx={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "5em" }} item xs={4}>
-                    <form onSubmit={handleSubmit(submit)}>
-                        <h1 className="text-4xl font-bold mb-10">Cadastro de Fornecedor</h1>
-                        <div>
-                        <label htmlFor="fornecedor">Fornecedor</label><br/>
-                        <input type="text" name="fornecedor" {...register("Fornecedor", { required: "Nome do Fornecedor é obrigatório" })} />  
-                        </div>    
-                        <div>                 
-                        <label htmlFor="email">E-mail</label><br/>
-                        <input type="email" name="email" {...register("Email", { required: "E-mail é obrigatório" })} />      
-                        </div>  
-                        <div>               
-                        <label htmlFor="telefone">Telefone</label><br/>
-                        <input type="text" name="telefone" size={60} {...register("Telefone", { required: "Telefone é obrigatório" })} />
-                        </div>
-                        <Button variant="contained" type="submit">Enviar</Button>
-                    </form>
-            </Grid>
+        <Grid sx={{ height: "70vh", justifyContent: "space-evenly" }} container>
+            <Grid sx={{ display: "flex", flexDirection: "column", justifyContent: "center" }} item xs={4}>
+                <form onSubmit={handleSubmit(submit)} className="flex flex-col justify-center gap-6 items-center">
+                    <h1 className="text-4xl font-bold mb-10">Cadastro de Cotações</h1>
+                    <div>
+                        <label htmlFor="fornecedor">Fornecedor</label><br />
+                        <select name="fornecedor" className="border-slate-400 border w-96" required>
+                            <option>Selecione...</option>
+                            {fornecedores.map((element) => {
+                                <option>{element.fornecedor}</option>
+                            })}
+                        </select>
+                    </div>
+                    <div>
+                    <label htmlFor="produto">Produto</label><br />
+                        <select name="produto" className="border-slate-400 border w-96" required>
+                            <option>Selecione...</option>   
+                            {produtos.map((element) => {
+                                <option>{element.produto}</option>
+                            })}
+                        </select>
+                    </div>
+                    <div>
+                        <label htmlFor="preco">Preço</label><br />
+                        <input type="text" name="preco" {...register("preco")} 
+                        className="border-slate-400 border w-96" required/>
+                    </div>
+                    <div>
+                        <label htmlFor="data">Data do Registro</label><br />
+                        <input type="date" name="data" size={60} {...register("data")} 
+                        className="border-slate-400 border w-96" required/>
+                    </div>
+                    <Button variant="contained" type="submit">Enviar</Button>
+                </form>
+            </Grid> 
         </Grid>
     )
 }
