@@ -1,14 +1,13 @@
 import { Button, Grid, TextField } from "../../components"
 import { useForm } from "react-hook-form"
-import { inserirProduto, listaProdutos } from "../../infra/produtos";
-import { listaFornecedores } from "../../infra/fornecedores";
+import { inserirCotacao } from "../../infra/cotacao";
 
 export default function CadastrarCotacao({ produtos = [], fornecedores = [] }) {
     const { register, handleSubmit, reset } = useForm()
 
     async function submit(dados) {
         console.log(dados)
-        await inserirProduto(dados);
+        await inserirCotacao(dados);
         reset()
     }
 
@@ -19,20 +18,20 @@ export default function CadastrarCotacao({ produtos = [], fornecedores = [] }) {
                     <h1 className="text-4xl font-bold mb-10">Cadastro de Cotações</h1>
                     <div>
                         <label htmlFor="fornecedor">Fornecedor</label><br />
-                        <select name="fornecedor" className="border-slate-400 border w-96" required>
+                        <select name="fornecedor" className="border-slate-400 border w-96" {...register("fornecedor")} required>
                             <option>Selecione...</option>
-                            {fornecedores.map((element) => {
-                                <option>{element.fornecedor}</option>
-                            })}
+                            {fornecedores.map((element) => (
+                                <option key={element.id}>{element.fornecedor}</option>
+                            ))}
                         </select>
                     </div>
                     <div>
                     <label htmlFor="produto">Produto</label><br />
-                        <select name="produto" className="border-slate-400 border w-96" required>
+                        <select name="produto" className="border-slate-400 border w-96" {...register("produto")} required>
                             <option>Selecione...</option>   
-                            {produtos.map((element) => {
-                                <option>{element.produto}</option>
-                            })}
+                            {produtos.map((element) => (
+                                <option key={element.id}>{element.produto}</option>
+                            ))}
                         </select>
                     </div>
                     <div>

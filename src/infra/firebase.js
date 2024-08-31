@@ -1,10 +1,10 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
-
 const firebaseConfig = {
   apiKey: "AIzaSyAgqj12nPyzmI1XKhNpGD-iim0x9lmGCPI",
   authDomain: "siscomp-pb.firebaseapp.com",
+  databaseURL: "https://siscomp-pb-default-rtdb.firebaseio.com",
   projectId: "siscomp-pb",
   storageBucket: "siscomp-pb.appspot.com",
   messagingSenderId: "128983827083",

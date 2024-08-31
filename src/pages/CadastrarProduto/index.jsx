@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form"
 import { inserirProduto, listaProdutos } from "../../infra/produtos";
 import DataTable from "react-data-table-component"
 
-export default function CadastrarProduto({ produtos = [] }) {
+export default function CadastrarProduto({ produtos }) {
     const { register, handleSubmit, reset } = useForm()
 
     async function submit(dados) {

@@ -4,7 +4,6 @@ import { db } from "./firebase";
 export async function inserirFornecedor(novoFornecedor) {
     try {
         const docRef = await addDoc(collection(db, "fornecedores"), novoFornecedor);
-        console.log(docRef.id)
     } catch (e) {
         console.error(e)
     }

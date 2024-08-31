@@ -1,6 +1,6 @@
-import { Button, Grid, TextField } from "../../components"
+import { Button, Grid } from "../../components"
 import { useForm } from "react-hook-form"
-import { inserirFornecedor, listaFornecedores } from "../../infra/fornecedores";
+import { inserirFornecedor } from "../../infra/fornecedores";
 import DataTable from "react-data-table-component"
 
 export default function CadastrarFornecedor({ fornecedores = [] }) {
@@ -8,6 +8,7 @@ export default function CadastrarFornecedor({ fornecedores = [] }) {
 
     async function submit(dados) {
         await inserirFornecedor(dados);
+        window.location.reload();
         alert("Fornecedor cadastrado com sucesso");
         reset()
     }
@@ -37,6 +38,7 @@ export default function CadastrarFornecedor({ fornecedores = [] }) {
                         <input type="text" name="fornecedor" size={60} {...register("fornecedor")} 
                         className="border-slate-400 border" required/>
                     </div>
+                    <h2 className="text-2xl font-bold mt-6">Contato</h2>
                     <div>
                         <label htmlFor="email">E-mail</label><br />
                         <input type="email" name="email" size={60} {...register("email")} 
