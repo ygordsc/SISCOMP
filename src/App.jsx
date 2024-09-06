@@ -1,17 +1,18 @@
 import './App.css'
 import {
-  CadastrarProduto,
-  ConsultarCotacoes,
-  CadastrarFornecedor,
+  Produtos,
+  Fornecedores,
   CadastrarCotacao,
   Home,
   Login,
-  Registro
+  Registro,
+  Contatos
 } from './pages'
 import { Suspense, useEffect, useState } from 'react'
 import { listaFornecedores } from './infra/fornecedores'
 import { listaProdutos } from './infra/produtos'
 import { listaCotacoes } from './infra/cotacao'
+import { listaContatos } from './infra/contatos'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Header, Loading } from './components'
 
@@ -20,6 +21,7 @@ export default function App() {
   const [fornecedores, setFornecedores] = useState([]);
   const [produtos, setProdutos] = useState([]);
   const [cotacoes, setCotacoes] = useState([]);
+  const [contatos, setContatos] = useState([]);
   const admin = localStorage.getItem("admin") === "true";
   const logado = localStorage.getItem("logado") === "true";
 
@@ -34,6 +36,8 @@ export default function App() {
       const novoArrCotacoes = await listaCotacoes();
       setCotacoes(novoArrCotacoes);
 
+      const novoArrContatos = await listaContatos();
+      setContatos(novoArrContatos);
     }
 
     fetchData();
@@ -59,10 +63,10 @@ export default function App() {
             admin &&
             <>
               <Route path="/home" element={<Home />} />
-              <Route path="/cadastracotacoes" element={<CadastrarCotacao produtos={produtos} fornecedores={fornecedores} />} />
-              <Route path="/fornecedores" element={<CadastrarFornecedor fornecedores={fornecedores} />} />
-              <Route path="/produtos" element={<CadastrarProduto produtos={produtos} />} />
-              <Route path="/cotacoes" element={<ConsultarCotacoes cotacoes={cotacoes} />} />
+              <Route path="/requisicoes" element={<CadastrarCotacao produtos={produtos} fornecedores={fornecedores} />} />
+              <Route path="/fornecedores" element={<Fornecedores fornecedores={fornecedores} />} />
+              <Route path="/produtos" element={<Produtos produtos={produtos} />} />
+              <Route path="/contatos" element={<Contatos contatos={contatos} fornecedores={fornecedores}/>} />
               <Route path="/registrar" element={<Registro />} />
             </>
           }

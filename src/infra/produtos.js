@@ -1,4 +1,4 @@
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
 
 export async function inserirProduto(novoProduto) {
@@ -17,4 +17,8 @@ export async function listaProdutos() {
             retorno = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
         });
     return retorno;
+}
+
+export async function deletaProduto(id) {
+    await deleteDoc(doc(db, "produtos", id));
 }

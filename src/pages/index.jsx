@@ -1,7 +1,7 @@
 export { default as CadastrarCotacao } from "./CadastrarCotacao";
-export { default as CadastrarFornecedor } from "./CadastrarFornecedor";
-export { default as CadastrarProduto } from "./CadastrarProduto";
-export { default as ConsultarCotacoes } from "./ConsultarCotacoes";
+export { default as Fornecedores } from "./Fornecedores";
+export { default as Produtos } from "./Produtos";
+export { default as Contatos } from "./Contatos";
 export { default as Home } from "./Home";
 export { default as Login } from "./Login";
 export { default as Registro } from "./Registro";

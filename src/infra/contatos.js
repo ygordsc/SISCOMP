@@ -7,23 +7,24 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase";
 
-export async function inserirFornecedor(novoFornecedor) {
+export async function inserirContato(novoContato) {
     try {
-        const docRef = await addDoc(collection(db, "fornecedores"), novoFornecedor);
+        const docRef = await addDoc(collection(db, "contatos"), novoContato);
+        console.log(docRef.id)
     } catch (e) {
         console.error(e)
     }
 }
 
-export async function listaFornecedores() {
+export async function listaContatos() {
     let retorno;
-    await getDocs(collection(db, "fornecedores"))
+    await getDocs(collection(db, "contatos"))
         .then((querySnapshot) => {
             retorno = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
         });
     return retorno;
 }
 
-export async function deletaFornecedor(id) {
-    await deleteDoc(doc(db, "fornecedores", id));
+export async function deletaContato(id) {
+    await deleteDoc(doc(db, "contatos", id));
 }

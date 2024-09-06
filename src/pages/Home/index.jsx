@@ -1,8 +1,20 @@
+import { Grid, Typography } from "@mui/material";
+
 export default function Home() {
     return (
-        <div className="mt-16">
-            <h1 className="text-6xl text-center">SISCOMP</h1>
-            <h2 className="text-3xl text-center">Sistema de Requisição de Compras</h2>
-        </div>
+        <Grid container>
+            <Grid
+            sx={{
+                height: "100vh",
+                justifyContent: "center",
+                alignItems: "center",
+                flexDirection: "column",
+                display: "flex"
+            }} 
+            item xs={12}>
+                <Typography variant="h2">SISCOMP</Typography>
+                <Typography variant="h3">Sistema de Requisição de Compras</Typography>
+            </Grid>
+        </Grid>
     )
 }
