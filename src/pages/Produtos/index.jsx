@@ -1,6 +1,6 @@
 import { Button, Grid, TextField } from "../../components"
 import { useForm } from "react-hook-form"
-import { deletaProduto, inserirProduto, listaProdutos } from "../../infra/produtos";
+import { deletaProduto, editaProduto, inserirProduto, listaProdutos } from "../../infra/produtos";
 import DataTable from "react-data-table-component"
 import { useState } from "react";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -8,24 +8,26 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import { Typography } from "@mui/material";
 
-export default function Produtos({ produtos }) {
+export default function Produtos({ produtos, setUpdate }) {
     const { register, handleSubmit, reset } = useForm()
     const [produtoSelecionado, setProdutoSelecionado] = useState({})
 
     async function submit(dados) {
         await inserirProduto(dados);
+        setUpdate(dados);
         reset()
     }
 
     async function handleDelete() {
         await deletaProduto(produtoSelecionado.id);
-        window.location.reload();
+        document.querySelector("#hiddenDelete").style.display = "none";
+        setUpdate(produtoSelecionado);
     }
 
     async function handleEdit() {
-        await deletaProduto(produtoSelecionado.id);
-        await inserirProduto(produtoSelecionado);
-        window.location.reload();
+        await editaProduto(produtoSelecionado.id, produtoSelecionado);
+        document.querySelector("#hiddenEdit").style.display = "none";
+        setUpdate(produtoSelecionado);
     }
 
     const colunas = [
@@ -53,13 +55,15 @@ export default function Produtos({ produtos }) {
         }
     ]
 
-    window.onclick = function (event) {
-        if (event.target == hiddenDelete) {
-            hiddenDelete.style.display = "none";
-        } else if (event.target == hiddenEdit) {
-            hiddenEdit.style.display = "none";
-        }
-    }
+    // window.onclick = function (event) {
+    //     const hiddenDelete = document.querySelector("#hiddenDelete");
+    //     const hiddenEdit = document.querySelector("#hiddenEdit");
+    //     if (event.target == hiddenDelete) {
+    //         hiddenDelete.style.display = "none";
+    //     } else if (event.target == hiddenEdit) {
+    //         hiddenEdit.style.display = "none";
+    //     }
+    // }
 
     return (
         <Grid sx={{ height: "70vh", justifyContent: "space-evenly" }} container>
@@ -114,9 +118,9 @@ export default function Produtos({ produtos }) {
                         <CloseIcon sx={{
                             cursor: "pointer"
                         }} onClick={() => document.querySelector("#hiddenDelete").style.display = "none"} />
-                        <Typography variant="h4">Deseja excluir o fornecedor?</Typography>
+                        <Typography variant="h4">Deseja excluir o produto?</Typography>
                         <Typography variant="h6">ID: {produtoSelecionado.id}</Typography>
-                        <Typography variant="h6">Nome: {produtoSelecionado.fornecedor}</Typography>
+                        <Typography variant="h6">Nome: {produtoSelecionado.produto}</Typography>
                         <Button
                             color="error"
                             variant="contained"
@@ -155,7 +159,7 @@ export default function Produtos({ produtos }) {
                         <CloseIcon sx={{
                             cursor: "pointer"
                         }} onClick={() => document.querySelector("#hiddenEdit").style.display = "none"} />
-                        <Typography variant="h4">Editar fornecedor</Typography>
+                        <Typography variant="h4">Editar produto</Typography>
                         <TextField label="ID" value={produtoSelecionado.id} disabled />
                         <TextField
                             label="Nome"

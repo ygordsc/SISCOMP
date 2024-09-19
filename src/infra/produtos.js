@@ -1,4 +1,11 @@
-import { addDoc, collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+import {
+    addDoc,
+    collection, 
+    deleteDoc, 
+    doc, 
+    getDocs, 
+    updateDoc
+} from "firebase/firestore";
 import { db } from "./firebase";
 
 export async function inserirProduto(novoProduto) {
@@ -21,4 +28,8 @@ export async function listaProdutos() {
 
 export async function deletaProduto(id) {
     await deleteDoc(doc(db, "produtos", id));
+}
+
+export async function editaProduto(id, novoProduto) {
+    await updateDoc(doc(db, "produtos", id), novoProduto);
 }

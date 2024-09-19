@@ -1,17 +1,15 @@
 import { login } from "../../infra/auth";
 
-export default function Login({setAdmin}) {
+export default function Login({setLogado, setAdmin}) {
 
     async function handleSubmit(event) {
         event.preventDefault();
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
-        let admin;
         if(email.indexOf("admin") > 0) {
-            admin = true;
-            await login(email, password, admin)
+            await login(email, password, setAdmin)
         } else {
-            await login(email, password);
+            await login(email, password, setLogado);
         }
     }
 

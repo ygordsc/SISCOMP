@@ -3,14 +3,14 @@ import {
     collection, 
     deleteDoc, 
     doc, 
-    getDocs 
+    getDocs, 
+    updateDoc
 } from "firebase/firestore";
 import { db } from "./firebase";
 
 export async function inserirContato(novoContato) {
     try {
         const docRef = await addDoc(collection(db, "contatos"), novoContato);
-        console.log(docRef.id)
     } catch (e) {
         console.error(e)
     }
@@ -27,4 +27,8 @@ export async function listaContatos() {
 
 export async function deletaContato(id) {
     await deleteDoc(doc(db, "contatos", id));
+}
+
+export async function editaContato(id, novoContato) {
+    await updateDoc(doc(db, "contatos", id), novoContato);
 }

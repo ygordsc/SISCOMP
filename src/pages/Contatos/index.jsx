@@ -1,6 +1,6 @@
 import { Button, Grid, TextField } from "../../components"
 import { useForm } from "react-hook-form"
-import { deletaContato, inserirContato } from "../../infra/contatos";
+import { deletaContato, editaContato, inserirContato } from "../../infra/contatos";
 import DataTable from "react-data-table-component"
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
@@ -8,26 +8,26 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 
-export default function Contatos({ contatos = [], fornecedores = [] }) {
+export default function Contatos({ contatos, fornecedores, setUpdate }) {
     const { register, handleSubmit, reset } = useForm()
     const [contatoSelecionado, setContatoSelecionado] = useState({})
 
     async function submit(dados) {
-        console.log(dados)
         await inserirContato(dados);
-        window.location.reload();
+        setUpdate(dados);
         reset()
     }
 
     async function handleDelete() {
         await deletaContato(contatoSelecionado.id);
-        window.location.reload();
+        document.querySelector("#hiddenDelete").style.display = "none";
+        setUpdate(contatoSelecionado);
     }
 
     async function handleEdit() {
-        await deletaContato(contatoSelecionado.id);
-        await inserirContato(contatoSelecionado);
-        window.location.reload();
+        await editaContato(contatoSelecionado.id, contatoSelecionado);
+        document.querySelector("#hiddenEdit").style.display = "none";
+        setUpdate(contatoSelecionado);
     }
 
     const colunas = [
@@ -62,15 +62,6 @@ export default function Contatos({ contatos = [], fornecedores = [] }) {
                 </>
         }
     ]
-
-    window.onclick = function (event) {
-        if (event.target == hiddenDelete) {
-            hiddenDelete.style.display = "none";
-        } else if (event.target == hiddenEdit) {
-            hiddenEdit.style.display = "none";
-        }
-    }
-
 
     return (
         <Grid sx={{ height: "100vh", justifyContent: "space-evenly", zIndex: 0 }} container>
@@ -205,12 +196,14 @@ export default function Contatos({ contatos = [], fornecedores = [] }) {
                                 onChange={(e) => setContatoSelecionado({ ...contatoSelecionado, fornecedor: e.target.value })}
                                 required
                             >
-                                <option value={contatoSelecionado.fornecedor}>{contatoSelecionado.fornecedor}</option>
-                                {fornecedores.map((element) => (
-                                    <option key={element.id}>
-                                        {element.fornecedor}
-                                    </option>
-                                ))}
+                                <option>{contatoSelecionado.fornecedor}</option>
+                                {fornecedores
+                                    .filter(element => element.fornecedor !== contatoSelecionado.fornecedor)
+                                    .map((element) => (
+                                        <option key={element.id}>
+                                            {element.fornecedor}
+                                        </option>
+                                    ))}
                             </select>
                         </div>
                         <Button

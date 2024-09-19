@@ -6,18 +6,19 @@ import {
 } from "firebase/auth";
 
 
-export async function login(email, password, admin) {
+export async function login(email, password, setAcesso) {
     const auth = getAuth();
     signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             const user = userCredential.user;
-            if (admin) {
-                localStorage.setItem("admin", true);
-                window.location.href = "/home";
-            } else {
-                localStorage.setItem("logado", true);
-                window.location.href = "/home";
-            }
+            setAcesso(true);
+            // if (admin) {
+            //     localStorage.setItem("admin", true);
+            //     window.location.href = "/home";
+            // } else {
+            //     localStorage.setItem("logado", true);
+            //     window.location.href = "/home";
+            // }
         })
         .catch((error) => {
             const errorCode = error.code;

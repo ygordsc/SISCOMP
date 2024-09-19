@@ -22,8 +22,9 @@ export default function App() {
   const [produtos, setProdutos] = useState([]);
   const [cotacoes, setCotacoes] = useState([]);
   const [contatos, setContatos] = useState([]);
-  const admin = localStorage.getItem("admin") === "true";
-  const logado = localStorage.getItem("logado") === "true";
+  const [update, setUpdate] = useState({});
+  const [logado, setLogado] = useState(localStorage.getItem("logado") === "true");
+  const [admin, setAdmin] = useState(localStorage.getItem("admin") === "true");
 
   useEffect(() => {
     async function fetchData() {
@@ -41,7 +42,14 @@ export default function App() {
     }
 
     fetchData();
-  }, [])
+  }, [update])
+
+  useEffect(() => {
+    localStorage.setItem("logado", logado);
+    localStorage.setItem("admin", admin);
+  }, [logado, admin])
+
+//TODO: Implementar a rota default (path="*")
 
   return (
     <Router>
@@ -51,22 +59,21 @@ export default function App() {
         <Header admin={admin} />
       }
       <Routes>
-        <Route path="/" element={logado || admin ? null : <Login />} >
+        <Route path="/" element={logado || admin ? null : <Login setLogado={setLogado} setAdmin={setAdmin} />} >
           {
             logado &&
             <>
               <Route path="/home" element={<Home />} />
             </>
-            
           }
           {
             admin &&
             <>
               <Route path="/home" element={<Home />} />
               <Route path="/requisicoes" element={<CadastrarCotacao produtos={produtos} fornecedores={fornecedores} />} />
-              <Route path="/fornecedores" element={<Fornecedores fornecedores={fornecedores} />} />
-              <Route path="/produtos" element={<Produtos produtos={produtos} />} />
-              <Route path="/contatos" element={<Contatos contatos={contatos} fornecedores={fornecedores}/>} />
+              <Route path="/fornecedores" element={<Fornecedores fornecedores={fornecedores} setUpdate={setUpdate} />} />
+              <Route path="/produtos" element={<Produtos produtos={produtos} setUpdate={setUpdate} />} />
+              <Route path="/contatos" element={<Contatos contatos={contatos} fornecedores={fornecedores} setUpdate={setUpdate}/>} />
               <Route path="/registrar" element={<Registro />} />
             </>
           }

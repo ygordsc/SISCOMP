@@ -1,32 +1,49 @@
 import { Button, Grid, TextField } from "../../components"
 import { useForm } from "react-hook-form"
-import { deletaFornecedor, inserirFornecedor } from "../../infra/fornecedores";
+import { deletaFornecedor, editaFornecedor, inserirFornecedor } from "../../infra/fornecedores";
 import DataTable from "react-data-table-component"
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import { Typography } from "@mui/material";
 import { useEffect, useState } from "react";
+import buscaCep from "../../infra/viacep";
 
-export default function Fornecedores({ fornecedores = [] }) {
-    const { register, handleSubmit, reset } = useForm()
+export default function Fornecedores({ fornecedores, setUpdate }) {
+    const { register,
+        handleSubmit,
+        formState: { errors, isSubmitted },
+        reset,
+        setValue,
+    } = useForm()
     const [fornecedorSelecionado, setFornecedorSelecionado] = useState({})
 
     async function submit(dados) {
         await inserirFornecedor(dados);
-        window.location.reload();
+        setUpdate(dados);
         reset()
     }
 
     async function handleDelete() {
         await deletaFornecedor(fornecedorSelecionado.id);
-        window.location.reload();
+        document.querySelector("#hiddenDelete").style.display = "none";
+        setUpdate(fornecedorSelecionado);
     }
 
     async function handleEdit() {
-        await deletaFornecedor(fornecedorSelecionado.id);
-        await inserirFornecedor(fornecedorSelecionado);
-        window.location.reload();
+        await editaFornecedor(fornecedorSelecionado.id, fornecedorSelecionado);
+        document.querySelector("#hiddenEdit").style.display = "none";
+        setUpdate(fornecedorSelecionado);
+    }
+
+    async function atualizaCep(e) {
+        const cep = e.target.value;
+        if (cep.length === 8) {
+            const dados = await buscaCep(cep);
+            setValue("endereco", dados.logradouro);
+        } else {
+            setValue("endereco", "");
+        }
     }
 
     const colunas = [
@@ -62,15 +79,6 @@ export default function Fornecedores({ fornecedores = [] }) {
         }
     ]
 
-    window.onclick = function (event) {
-        if (event.target == hiddenDelete) {
-            hiddenDelete.style.display = "none";
-        } else if (event.target == hiddenEdit) {
-            hiddenEdit.style.display = "none";
-        }
-    }
-
-
     return (
         <Grid sx={{ height: "100vh", justifyContent: "space-evenly", zIndex: 0 }} container>
             <Grid sx={{ display: "flex", flexDirection: "column", justifyContent: "center", zIndex: 0 }} item xs={4}>
@@ -80,6 +88,12 @@ export default function Fornecedores({ fornecedores = [] }) {
                         <label htmlFor="fornecedor">Fornecedor</label><br />
                         <input type="text" name="fornecedor" size={60} {...register("fornecedor")}
                             className="border-slate-400 border" required />
+                    </div>
+                    <div>
+                        <label htmlFor="cep">CEP</label><br />
+                        <input type="text" name="cep" size={60}
+                            className="border-slate-400 border" id="cep"
+                            onChange={atualizaCep} />
                     </div>
                     <div>
                         <label htmlFor="endereco">Endereço</label><br />
