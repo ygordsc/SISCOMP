@@ -12,13 +12,6 @@ export async function login(email, password, setAcesso) {
         .then((userCredential) => {
             const user = userCredential.user;
             setAcesso(true);
-            // if (admin) {
-            //     localStorage.setItem("admin", true);
-            //     window.location.href = "/home";
-            // } else {
-            //     localStorage.setItem("logado", true);
-            //     window.location.href = "/home";
-            // }
         })
         .catch((error) => {
             const errorCode = error.code;

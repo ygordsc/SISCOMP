@@ -15,12 +15,15 @@ import { listaCotacoes } from './infra/cotacao'
 import { listaContatos } from './infra/contatos'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Header, Loading } from './components'
+import Cotacoes from './pages/Cotações'
+import { listaRequisicoes } from './infra/requisicoes'
 
 export default function App() {
 
   const [fornecedores, setFornecedores] = useState([]);
   const [produtos, setProdutos] = useState([]);
   const [cotacoes, setCotacoes] = useState([]);
+  const [requisicoes, setRequisicoes] = useState([]);
   const [contatos, setContatos] = useState([]);
   const [update, setUpdate] = useState({});
   const [logado, setLogado] = useState(localStorage.getItem("logado") === "true");
@@ -39,6 +42,9 @@ export default function App() {
 
       const novoArrContatos = await listaContatos();
       setContatos(novoArrContatos);
+
+      const novoArrRequisicoes = await listaRequisicoes();
+      setRequisicoes(novoArrRequisicoes);
     }
 
     fetchData();
@@ -49,14 +55,15 @@ export default function App() {
     localStorage.setItem("admin", admin);
   }, [logado, admin])
 
-//TODO: Implementar a rota default (path="*")
+  //TODO: Implementar a rota default (path="*")
 
   return (
     <Router>
       <Suspense fallback={<Loading />} />
       {
-        logado || admin &&
-        <Header admin={admin} />
+        admin || logado
+          ? <Header admin={admin} />
+          : null
       }
       <Routes>
         <Route path="/" element={logado || admin ? null : <Login setLogado={setLogado} setAdmin={setAdmin} />} >
@@ -64,16 +71,17 @@ export default function App() {
             logado &&
             <>
               <Route path="/home" element={<Home />} />
+              <Route path="/requisicoes" element={<Cotacoes produtos={produtos} fornecedores={fornecedores} logado={logado} admin={admin} cotacoes={cotacoes} requisicoes={requisicoes} setUpdate={setUpdate} />} />
             </>
           }
           {
             admin &&
             <>
               <Route path="/home" element={<Home />} />
-              <Route path="/requisicoes" element={<CadastrarCotacao produtos={produtos} fornecedores={fornecedores} />} />
+              <Route path="/requisicoes" element={<Cotacoes produtos={produtos} fornecedores={fornecedores} logado={logado} admin={admin} cotacoes={cotacoes} requisicoes={requisicoes} setUpdate={setUpdate} />} />
               <Route path="/fornecedores" element={<Fornecedores fornecedores={fornecedores} setUpdate={setUpdate} />} />
               <Route path="/produtos" element={<Produtos produtos={produtos} setUpdate={setUpdate} />} />
-              <Route path="/contatos" element={<Contatos contatos={contatos} fornecedores={fornecedores} setUpdate={setUpdate}/>} />
+              <Route path="/contatos" element={<Contatos contatos={contatos} fornecedores={fornecedores} setUpdate={setUpdate} />} />
               <Route path="/registrar" element={<Registro />} />
             </>
           }

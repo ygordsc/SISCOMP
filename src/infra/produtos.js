@@ -11,7 +11,6 @@ import { db } from "./firebase";
 export async function inserirProduto(novoProduto) {
     try {
         const docRef = await addDoc(collection(db, "produtos"), novoProduto);
-        console.log(docRef.id)
     } catch (e) {
         console.error(e)
     }

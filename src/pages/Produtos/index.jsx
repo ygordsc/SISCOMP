@@ -66,7 +66,7 @@ export default function Produtos({ produtos, setUpdate }) {
     // }
 
     return (
-        <Grid sx={{ height: "70vh", justifyContent: "space-evenly" }} container>
+        <Grid sx={{ height: "100vh", justifyContent: "space-evenly" }} container>
             <Grid sx={{ display: "flex", flexDirection: "column", justifyContent: "center" }} item xs={4}>
                 <form onSubmit={handleSubmit(submit)} className="flex flex-col justify-center gap-6 items-center">
                     <h1 className="text-4xl font-bold mb-10">Cadastro de Produto</h1>
