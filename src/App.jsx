@@ -11,20 +11,20 @@ import {
 import { Suspense, useEffect, useState } from 'react'
 import { listaFornecedores } from './infra/fornecedores'
 import { listaProdutos } from './infra/produtos'
-import { listaCotacoes } from './infra/cotacao'
 import { listaContatos } from './infra/contatos'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Header, Loading } from './components'
 import Cotacoes from './pages/Cotações'
 import { listaRequisicoes } from './infra/requisicoes'
+import { listaCotacoes } from './infra/cotacoes'
 
 export default function App() {
 
   const [fornecedores, setFornecedores] = useState([]);
   const [produtos, setProdutos] = useState([]);
-  const [cotacoes, setCotacoes] = useState([]);
   const [requisicoes, setRequisicoes] = useState([]);
   const [contatos, setContatos] = useState([]);
+  const [cotacoes, setCotacoes] = useState([]);
   const [update, setUpdate] = useState({});
   const [logado, setLogado] = useState(localStorage.getItem("logado") === "true");
   const [admin, setAdmin] = useState(localStorage.getItem("admin") === "true");
@@ -37,14 +37,14 @@ export default function App() {
       const novoArrProdutos = await listaProdutos();
       setProdutos(novoArrProdutos);
 
-      const novoArrCotacoes = await listaCotacoes();
-      setCotacoes(novoArrCotacoes);
-
       const novoArrContatos = await listaContatos();
       setContatos(novoArrContatos);
 
       const novoArrRequisicoes = await listaRequisicoes();
       setRequisicoes(novoArrRequisicoes);
+
+      const novoArrCotacoes = await listaCotacoes();
+      setCotacoes(novoArrCotacoes);
     }
 
     fetchData();
@@ -71,14 +71,14 @@ export default function App() {
             logado &&
             <>
               <Route path="/home" element={<Home />} />
-              <Route path="/requisicoes" element={<Cotacoes produtos={produtos} fornecedores={fornecedores} logado={logado} admin={admin} cotacoes={cotacoes} requisicoes={requisicoes} setUpdate={setUpdate} />} />
+              <Route path="/requisicoes" element={<Cotacoes produtos={produtos} fornecedores={fornecedores} logado={logado} admin={admin} requisicoes={requisicoes} cotacoes={cotacoes} setUpdate={setUpdate} />} />
             </>
           }
           {
             admin &&
             <>
               <Route path="/home" element={<Home />} />
-              <Route path="/requisicoes" element={<Cotacoes produtos={produtos} fornecedores={fornecedores} logado={logado} admin={admin} cotacoes={cotacoes} requisicoes={requisicoes} setUpdate={setUpdate} />} />
+              <Route path="/requisicoes" element={<Cotacoes produtos={produtos} fornecedores={fornecedores} logado={logado} admin={admin} requisicoes={requisicoes} cotacoes={cotacoes} setUpdate={setUpdate} />} />
               <Route path="/fornecedores" element={<Fornecedores fornecedores={fornecedores} setUpdate={setUpdate} />} />
               <Route path="/produtos" element={<Produtos produtos={produtos} setUpdate={setUpdate} />} />
               <Route path="/contatos" element={<Contatos contatos={contatos} fornecedores={fornecedores} setUpdate={setUpdate} />} />

@@ -9,9 +9,9 @@ const Header = ({ admin }) => {
     }
 
     return (
-        <header className="bg-gray-400 w-screen h-16 flex items-center fixed z-50 mb-32">
+        <header className="bg-gray-300 w-screen h-16 flex items-center fixed z-50 mb-32">
             {admin ?
-                <ul className="flex space-x-10 pl-8 text-neutral-300 text-black">
+                <ul className="flex space-x-10 pl-8 text-black">
                     <li className="mr-14 font-bold"><a href="/home">SISCOMP</a></li>
                     <li><a href="/requisicoes">Requisições de Compra</a></li>
                     <li><a href="/fornecedores">Fornecedores</a></li>
@@ -20,8 +20,8 @@ const Header = ({ admin }) => {
                     <li><button onClick={handleClick}>Logout</button></li>
                 </ul>
                 :
-                <ul className="flex space-x-8 pl-8 text-neutral-300 font-bold">
-                    <li className="mr-14"><a href="/home">SISCOMP</a></li>
+                <ul className="flex space-x-10 pl-8 text-black">
+                    <li className="mr-14 font-bold"><a href="/home">SISCOMP</a></li>
                     <li><a href="/requisicoes">Requisições de Compra</a></li>
                     <li><button onClick={handleClick}>Logout</button></li>
                 </ul>

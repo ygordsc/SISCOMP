@@ -1,20 +1,28 @@
 import { Button, Grid, TextField } from "../../components"
 import { useForm } from "react-hook-form"
-import { inserirCotacao } from "../../infra/cotacao";
+import { deletaCotacao, inserirCotacao } from "../../infra/cotacoes";
 import { deletaRequisicao, inserirRequisicao } from "../../infra/requisicoes";
 import { getAuth } from "firebase/auth";
 import { useEffect, useState } from "react";
 import CloseIcon from '@mui/icons-material/Close';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
-export default function Cotacoes({ produtos, fornecedores, logado, admin, cotacoes, requisicoes, setUpdate }) {
+export default function Cotacoes({ produtos, fornecedores, logado, admin, requisicoes, cotacoes, setUpdate }) {
     const { register, handleSubmit, reset } = useForm()
 
     const [statusCotacao, setStatusCotacao] = useState(0);
-    const [requisicaoSelecionada, setRequisicaoSelecionada] = useState({});
+    const [requisicaoSelecionada, setRequisicaoSelecionada] = useState({ cotacoes: [] });
 
     async function submitCotacao(dados) {
-        console.log(dados)
+        dados.data = new Date()
+            .toISOString()
+            .slice(0, 10)
+            .split("-")
+            .reverse()
+            .join("/");
+        dados.idRequisicao = requisicaoSelecionada.id;
         await inserirCotacao(dados);
+        setUpdate(dados);
         reset()
     }
 
@@ -26,19 +34,12 @@ export default function Cotacoes({ produtos, fornecedores, logado, admin, cotaco
             .split("-")
             .reverse()
             .join("/");
-
         dados.user = auth.currentUser.email;
         dados.status = "Aberta";
         await inserirRequisicao(dados);
         setUpdate(dados);
         reset()
     }
-
-    // useEffect(() => {
-    //     if (statusCotacao === 1) {
-    //         alert("Cotação enviada com sucesso!")
-    //         setStatusCotacao(0)
-    //     }} ,[statusCotacao])
 
     return (
         <Grid sx={{ height: "70vh", justifyContent: "space-evenly" }} container>
@@ -52,12 +53,12 @@ export default function Cotacoes({ produtos, fornecedores, logado, admin, cotaco
                                 <div>
                                     <label htmlFor="produto">Produto</label><br />
                                     <input type="text" name="preco" {...register("produto")}
-                                        className="border-slate-400 border w-96" required />
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-80 p-2.5" required />
                                 </div>
                                 <div>
                                     <label htmlFor="descricao">Descrição</label><br />
                                     <textarea name="descricao" {...register("descricao")}
-                                        className="border-slate-400 border w-96" required />
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-80 p-2.5" required />
                                 </div>
                                 <Button variant="contained" type="submit">Enviar</Button>
                             </form>
@@ -66,36 +67,45 @@ export default function Cotacoes({ produtos, fornecedores, logado, admin, cotaco
                     <Grid item xs={6}>
                         <Grid sx={{ display: "flex", gap: "30px", justifyContent: "center" }} container>
                             {requisicoes
-                                .filter((element) => {
+                                .filter((requisicao) => {
                                     if (logado) {
-                                        return element.user === auth.currentUser.email
+                                        return requisicao.user === auth.currentUser.email
                                     } else {
-                                        return element
+                                        return requisicao
                                     }
                                 })
-                                .map((item) => (
+                                .map((requisicao) => (
                                     <Grid sx={{
                                         backgroundColor: "#eee",
                                         justifyContent: "center",
                                         boxShadow: "5px 5px 30px 0px rgba(138,138,138,1);",
                                         padding: "20px",
-                                    }} key={item.id} item xs={10}>
-                                        <h3>{item.data}</h3>
-                                        <h3>{item.user}</h3>
+                                    }} key={requisicao.id} item xs={10}>
+                                        <h3>{requisicao.data}</h3>
+                                        <h3>{requisicao.user}</h3>
                                         <br />
-                                        <h3>Produto: {item.produto}</h3>
-                                        <h3>Descrição: {item.descricao}</h3>
+                                        <h3>Produto: {requisicao.produto}</h3>
+                                        <h3>Descrição: {requisicao.descricao}</h3>
                                         <br />
-                                        <h3>Status: {item.status}</h3>
+                                        <h3>Status: {requisicao.status}</h3>
                                         <br />
                                         {logado
                                             ? <Button variant="contained" color="error" onClick={() => {
-                                                deletaRequisicao(item.id);
-                                                setUpdate(item);
+                                                {
+                                                    cotacoes
+                                                        .filter(cotacao => cotacao.idRequisicao === requisicao.id)
+                                                        .map(cotacao => {
+                                                            deletaCotacao(cotacao.id)
+                                                        })
+                                                }
+                                                deletaRequisicao(requisicao.id);
+                                                setUpdate(requisicao);
                                             }}>Excluir</Button>
-                                            : <Button variant="contained" onClick={() =>
+                                            : <Button variant="contained" onClick={() => {
                                                 document.querySelector("#adminForm").style.display = "flex"
-                                            }>Adicionar cotação</Button>
+                                                setRequisicaoSelecionada(requisicao)
+                                            }
+                                            }>Cotações</Button>
                                         }
                                     </Grid>
                                 ))}
@@ -115,20 +125,24 @@ export default function Cotacoes({ produtos, fornecedores, logado, admin, cotaco
                     width: "100%",
                     height: "100%",
                 }} item xs={12} id="adminForm">
-                    <Grid container>
+                    <Grid sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        margin: "auto",
+                        zIndex: 1,
+                        background: "white",
+                        width: "60%",
+                        height: "50%",
+                        padding: "80px",
+                        gap: "20px",
+                        borderRadius: "10px"
+                    }} container>
                         <Grid
                             sx={{
                                 display: "flex",
                                 flexDirection: "column",
-                                justifyContent: "center",
-                                margin: "auto",
-                                zIndex: 1,
-                                background: "white",
-                                width: "100%",
-                                height: "100%",
-                                padding: "80px",
                                 gap: "20px",
-                                borderRadius: "10px"
                             }}
                             item xs={4}>
                             <CloseIcon sx={{
@@ -158,13 +172,35 @@ export default function Cotacoes({ produtos, fornecedores, logado, admin, cotaco
                                     <input type="text" name="preco" {...register("preco")}
                                         className="border-slate-400 border w-96" required />
                                 </div>
-                                <div>
-                                    <label htmlFor="data">Data do Registro</label><br />
-                                    <input type="date" name="data" size={60} {...register("data")}
-                                        className="border-slate-400 border w-96" required />
-                                </div>
-                                <Button variant="contained" type="submit">Enviar</Button>
+                                <Button variant="contained" type="submit">Adicionar cotação</Button>
                             </form>
+                        </Grid>
+                        <Grid sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            flexDirection: "column",
+                        }} item xs={4}>
+                            {cotacoes
+                                .filter(cotacao => cotacao.idRequisicao === requisicaoSelecionada.id)
+                                .map((cotacao) => (
+                                    <>
+                                        <div className="border-gray-400 border my-2"></div>
+                                        <div className="flex items-center justify-between">
+                                            <div key={cotacao.id}>
+                                                <h3>{cotacao.data}</h3>
+                                                <h3>Fornecedor: {cotacao.fornecedor}</h3>
+                                                <h3>Produto: {cotacao.produto}</h3>
+                                                <h3>Preço: {cotacao.preco}</h3>
+                                            </div>
+                                            <DeleteOutlineIcon sx={{ cursor: "pointer" }}
+                                                onClick={() => {
+                                                    deletaCotacao(cotacao.id);
+                                                    setUpdate(cotacao);
+                                                }} />
+                                        </div>
+                                        <div className="border-gray-400 border my-2"></div>
+                                    </>
+                                ))}
                         </Grid>
                     </Grid>
                 </Grid>
