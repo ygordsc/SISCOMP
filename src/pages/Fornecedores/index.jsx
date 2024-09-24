@@ -6,7 +6,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import { Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import buscaCep from "../../infra/viacep";
 
 export default function Fornecedores({ fornecedores, setUpdate }) {
@@ -46,7 +46,7 @@ export default function Fornecedores({ fornecedores, setUpdate }) {
         }
     }
 
-    const colunas = [
+    const colunas = useMemo(() => [
         {
             name: "Fornecedor",
             selector: row => row.fornecedor
@@ -77,7 +77,7 @@ export default function Fornecedores({ fornecedores, setUpdate }) {
                     }} />
                 </>
         }
-    ]
+    ], [])
 
     return (
         <Grid sx={{ height: "100vh", justifyContent: "space-evenly", zIndex: 0 }} container>
@@ -85,30 +85,30 @@ export default function Fornecedores({ fornecedores, setUpdate }) {
                 <form onSubmit={handleSubmit(submit)} className="flex flex-col justify-center gap-6 items-center">
                     <h1 className="text-4xl font-bold mb-10">Cadastro de Fornecedor</h1>
                     <div>
-                        <label htmlFor="fornecedor">Fornecedor</label><br />
-                        <input type="text" name="fornecedor" size={60} {...register("fornecedor")}
-                            className="border-slate-400 border" required />
+                        <label htmlFor="fornecedor">Fornecedor *</label><br />
+                        <input type="text" name="fornecedor" {...register("fornecedor")}
+                            className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-80 p-2.5" required />
                     </div>
                     <div>
                         <label htmlFor="cep">CEP</label><br />
-                        <input type="text" name="cep" size={60}
-                            className="border-slate-400 border" id="cep"
+                        <input type="text" name="cep"
+                            className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-80 p-2.5" id="cep"
                             onChange={atualizaCep} />
                     </div>
                     <div>
-                        <label htmlFor="endereco">Endereço</label><br />
-                        <input type="text" name="endereco" size={60} {...register("endereco")}
-                            className="border-slate-400 border" required />
+                        <label htmlFor="endereco">Endereço *</label><br />
+                        <input type="text" name="endereco" {...register("endereco")}
+                            className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-80 p-2.5" required />
                     </div>
                     <div>
-                        <label htmlFor="email">E-mail</label><br />
-                        <input type="email" name="email" size={60} {...register("email")}
-                            className="border-slate-400 border" required />
+                        <label htmlFor="email">E-mail *</label><br />
+                        <input type="email" name="email" {...register("email")}
+                            className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-80 p-2.5" required />
                     </div>
                     <div>
-                        <label htmlFor="telefone">Telefone</label><br />
-                        <input type="text" name="telefone" size={60} {...register("telefone")}
-                            className="border-slate-400 border" required />
+                        <label htmlFor="telefone">Telefone *</label><br />
+                        <input type="text" name="telefone" {...register("telefone")}
+                            className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-80 p-2.5" required />
                     </div>
                     <Button variant="contained" type="submit">Enviar</Button>
                 </form>

@@ -70,22 +70,23 @@ export default function Contatos({ contatos, fornecedores, setUpdate }) {
                     <h1 className="text-4xl font-bold mb-10">Cadastro de Contatos</h1>
                     <div>
                         <label htmlFor="nome">Nome</label><br />
-                        <input type="text" name="nome" id="nome" size={60} {...register("nome")}
-                            className="border-slate-400 border" required />
+                        <input type="text" name="nome" id="nome" {...register("nome")}
+                            className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-80 p-2.5" required />
                     </div>
                     <div>
                         <label htmlFor="email">E-mail</label><br />
-                        <input type="email" name="email" id="email" size={60} {...register("email")}
-                            className="border-slate-400 border" required />
+                        <input type="email" name="email" id="email" {...register("email")}
+                            className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-80 p-2.5" required />
                     </div>
                     <div>
                         <label htmlFor="telefone">Telefone</label><br />
-                        <input type="text" name="telefone" id="telefone" size={60} {...register("telefone")}
-                            className="border-slate-400 border" required />
+                        <input type="text" name="telefone" id="telefone" {...register("telefone")}
+                            className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-80 p-2.5" required />
                     </div>
                     <div>
                         <label htmlFor="fornecedor">Fornecedor</label><br />
-                        <select name="fornecedor" id="fornecedor" className="border-slate-400 border w-96" {...register("fornecedor")} required>
+                        <select name="fornecedor" id="fornecedor"  {...register("fornecedor")}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-80 p-2.5" required>
                             <option value="">Selecione...</option>
                             {fornecedores.map((element) => (
                                 <option key={element.id}>{element.fornecedor}</option>

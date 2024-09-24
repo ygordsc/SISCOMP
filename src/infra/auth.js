@@ -12,6 +12,7 @@ export async function login(email, password, setAcesso) {
         .then((userCredential) => {
             const user = userCredential.user;
             setAcesso(true);
+            window.location.href = "/home";
         })
         .catch((error) => {
             const errorCode = error.code;

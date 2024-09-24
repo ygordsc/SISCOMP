@@ -1,17 +1,19 @@
 import { Button, Grid, TextField } from "../../components"
 import { useForm } from "react-hook-form"
-import { deletaCotacao, inserirCotacao } from "../../infra/cotacoes";
-import { deletaRequisicao, inserirRequisicao } from "../../infra/requisicoes";
+import { deletaCotacao, editaCotacao, inserirCotacao } from "../../infra/cotacoes";
+import { deletaRequisicao, editaRequisicao, inserirRequisicao } from "../../infra/requisicoes";
 import { getAuth } from "firebase/auth";
 import { useEffect, useState } from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { useMemo } from "react";
 
 export default function Cotacoes({ produtos, fornecedores, logado, admin, requisicoes, cotacoes, setUpdate }) {
     const { register, handleSubmit, reset } = useForm()
 
-    const [statusCotacao, setStatusCotacao] = useState(0);
     const [requisicaoSelecionada, setRequisicaoSelecionada] = useState({ cotacoes: [] });
+
+    let cotacoesFiltradas = cotacoes.filter(cotacao => cotacao.idRequisicao === requisicaoSelecionada.id)
 
     async function submitCotacao(dados) {
         dados.data = new Date()
@@ -21,6 +23,7 @@ export default function Cotacoes({ produtos, fornecedores, logado, admin, requis
             .reverse()
             .join("/");
         dados.idRequisicao = requisicaoSelecionada.id;
+        await editaRequisicao(requisicaoSelecionada.id, {status: "Em cotação"})
         await inserirCotacao(dados);
         setUpdate(dados);
         reset()
@@ -40,6 +43,17 @@ export default function Cotacoes({ produtos, fornecedores, logado, admin, requis
         setUpdate(dados);
         reset()
     }
+
+
+    const requisicoesFiltradas = useMemo(() => {
+        return requisicoes.filter((requisicao) => {
+            if (logado) {
+                return requisicao.user === auth.currentUser.email;
+            } else {
+                return requisicao;
+            }
+        });
+    }, [requisicoes]);
 
     return (
         <Grid sx={{ height: "70vh", justifyContent: "space-evenly" }} container>
@@ -66,14 +80,7 @@ export default function Cotacoes({ produtos, fornecedores, logado, admin, requis
                     }
                     <Grid item xs={6}>
                         <Grid sx={{ display: "flex", gap: "30px", justifyContent: "center" }} container>
-                            {requisicoes
-                                .filter((requisicao) => {
-                                    if (logado) {
-                                        return requisicao.user === auth.currentUser.email
-                                    } else {
-                                        return requisicao
-                                    }
-                                })
+                            {requisicoesFiltradas
                                 .map((requisicao) => (
                                     <Grid sx={{
                                         backgroundColor: "#eee",
@@ -180,10 +187,9 @@ export default function Cotacoes({ produtos, fornecedores, logado, admin, requis
                             justifyContent: "center",
                             flexDirection: "column",
                         }} item xs={4}>
-                            {cotacoes
-                                .filter(cotacao => cotacao.idRequisicao === requisicaoSelecionada.id)
+                            {cotacoesFiltradas
                                 .map((cotacao) => (
-                                    <>
+                                    <div key={cotacao.id}>
                                         <div className="border-gray-400 border my-2"></div>
                                         <div className="flex items-center justify-between">
                                             <div key={cotacao.id}>
@@ -199,7 +205,7 @@ export default function Cotacoes({ produtos, fornecedores, logado, admin, requis
                                                 }} />
                                         </div>
                                         <div className="border-gray-400 border my-2"></div>
-                                    </>
+                                    </div>
                                 ))}
                         </Grid>
                     </Grid>

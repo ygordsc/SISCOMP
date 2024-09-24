@@ -2,7 +2,7 @@ import { Button, Grid, TextField } from "../../components"
 import { useForm } from "react-hook-form"
 import { deletaProduto, editaProduto, inserirProduto, listaProdutos } from "../../infra/produtos";
 import DataTable from "react-data-table-component"
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import CloseIcon from '@mui/icons-material/Close';
@@ -30,7 +30,7 @@ export default function Produtos({ produtos, setUpdate }) {
         setUpdate(produtoSelecionado);
     }
 
-    const colunas = [
+    const colunas = useMemo(() => [
         {
             name: "Produto",
             selector: row => row.produto
@@ -53,17 +53,7 @@ export default function Produtos({ produtos, setUpdate }) {
                     }} />
                 </>
         }
-    ]
-
-    // window.onclick = function (event) {
-    //     const hiddenDelete = document.querySelector("#hiddenDelete");
-    //     const hiddenEdit = document.querySelector("#hiddenEdit");
-    //     if (event.target == hiddenDelete) {
-    //         hiddenDelete.style.display = "none";
-    //     } else if (event.target == hiddenEdit) {
-    //         hiddenEdit.style.display = "none";
-    //     }
-    // }
+    ], [])
 
     return (
         <Grid sx={{ height: "100vh", justifyContent: "space-evenly" }} container>
@@ -71,14 +61,14 @@ export default function Produtos({ produtos, setUpdate }) {
                 <form onSubmit={handleSubmit(submit)} className="flex flex-col justify-center gap-6 items-center">
                     <h1 className="text-4xl font-bold mb-10">Cadastro de Produto</h1>
                     <div>
-                        <label htmlFor="produto">Produto</label><br />
-                        <input type="text" name="produto" size={60} {...register("produto")} 
-                        className="border-slate-400 border" required/>
+                        <label htmlFor="produto">Produto *</label><br />
+                        <input type="text" name="produto" {...register("produto")} 
+                        className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-80 p-2.5" required/>
                     </div>
                     <div>
-                        <label htmlFor="categoria">Categoria</label><br />
-                        <input type="text" name="categoria" size={60} {...register("categoria")} 
-                        className="border-slate-400 border" required/>
+                        <label htmlFor="categoria">Categoria *</label><br />
+                        <input type="text" name="categoria" {...register("categoria")} 
+                        className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-80 p-2.5" required/>
                     </div>
                     <Button variant="contained" type="submit">Enviar</Button>
                 </form>
