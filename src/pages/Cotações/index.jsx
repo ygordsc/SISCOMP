@@ -1,9 +1,9 @@
 import { Button, Grid, TextField } from "../../components"
 import { useForm } from "react-hook-form"
-import { deletaCotacao, editaCotacao, inserirCotacao } from "../../infra/cotacoes";
+import { deletaCotacao, inserirCotacao } from "../../infra/cotacoes";
 import { deletaRequisicao, editaRequisicao, inserirRequisicao } from "../../infra/requisicoes";
 import { getAuth } from "firebase/auth";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useMemo } from "react";
@@ -23,7 +23,15 @@ export default function Cotacoes({ produtos, fornecedores, logado, admin, requis
             .reverse()
             .join("/");
         dados.idRequisicao = requisicaoSelecionada.id;
-        await editaRequisicao(requisicaoSelecionada.id, {status: "Em cotação"})
+        let contagemCotacoes = cotacoesFiltradas.length + 1
+        console.log(contagemCotacoes)
+        if (contagemCotacoes < 3) {
+            setRequisicaoSelecionada({ ...requisicaoSelecionada, status: "Em cotação" })
+            await editaRequisicao(requisicaoSelecionada.id, requisicaoSelecionada)
+        } else if (contagemCotacoes === 3) {
+            setRequisicaoSelecionada({ ...requisicaoSelecionada, status: "Cotada" })
+            await editaRequisicao(requisicaoSelecionada.id, requisicaoSelecionada)
+        }
         await inserirCotacao(dados);
         setUpdate(dados);
         reset()
@@ -42,6 +50,18 @@ export default function Cotacoes({ produtos, fornecedores, logado, admin, requis
         await inserirRequisicao(dados);
         setUpdate(dados);
         reset()
+    }
+
+    async function handleDeleteCotacao(id) {
+        deletaCotacao(id);
+        if (cotacoesFiltradas.length === 3) {
+            setRequisicaoSelecionada({ ...requisicaoSelecionada, status: "Em cotação" })
+            await editaRequisicao(requisicaoSelecionada.id, requisicaoSelecionada)
+        } else if (cotacoesFiltradas.length === 1) {
+            setRequisicaoSelecionada({ ...requisicaoSelecionada, status: "Aberta" })
+            await editaRequisicao(requisicaoSelecionada.id, requisicaoSelecionada)
+        }
+        setUpdate(id);
     }
 
 
@@ -96,8 +116,13 @@ export default function Cotacoes({ produtos, fornecedores, logado, admin, requis
                                         <br />
                                         <h3>Status: {requisicao.status}</h3>
                                         <br />
+                                        <Button variant="contained" onClick={() => {
+                                            document.querySelector("#adminForm").style.display = "flex"
+                                            setRequisicaoSelecionada(requisicao)
+                                        }
+                                        }>Cotações</Button>
                                         {logado
-                                            ? <Button variant="contained" color="error" onClick={() => {
+                                            ? <Button variant="contained" color="error" sx={{marginLeft:"15px"}} onClick={() => {
                                                 {
                                                     cotacoes
                                                         .filter(cotacao => cotacao.idRequisicao === requisicao.id)
@@ -108,11 +133,7 @@ export default function Cotacoes({ produtos, fornecedores, logado, admin, requis
                                                 deletaRequisicao(requisicao.id);
                                                 setUpdate(requisicao);
                                             }}>Excluir</Button>
-                                            : <Button variant="contained" onClick={() => {
-                                                document.querySelector("#adminForm").style.display = "flex"
-                                                setRequisicaoSelecionada(requisicao)
-                                            }
-                                            }>Cotações</Button>
+                                            : null
                                         }
                                     </Grid>
                                 ))}
@@ -120,41 +141,40 @@ export default function Cotacoes({ produtos, fornecedores, logado, admin, requis
                     </Grid>
                 </Grid>
             </Grid>
-            {
-                admin &&
+            <Grid sx={{
+                display: "none",
+                flexDirection: "column",
+                justifyContent: "center",
+                zIndex: 1,
+                position: "fixed",
+                background: "rgb(0, 0, 0, 0.5)",
+                width: "100%",
+                height: "100%",
+            }} item xs={12} id="adminForm">
                 <Grid sx={{
-                    display: "none",
+                    display: "flex",
                     flexDirection: "column",
                     justifyContent: "center",
+                    margin: "auto",
                     zIndex: 1,
-                    position: "fixed",
-                    background: "rgb(0, 0, 0, 0.5)",
-                    width: "100%",
-                    height: "100%",
-                }} item xs={12} id="adminForm">
-                    <Grid sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        margin: "auto",
-                        zIndex: 1,
-                        background: "white",
-                        width: "60%",
-                        height: "50%",
-                        padding: "80px",
-                        gap: "20px",
-                        borderRadius: "10px"
-                    }} container>
-                        <Grid
-                            sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "20px",
-                            }}
-                            item xs={4}>
-                            <CloseIcon sx={{
-                                cursor: "pointer"
-                            }} onClick={() => document.querySelector("#adminForm").style.display = "none"} />
+                    background: "white",
+                    width: "60%",
+                    height: "50%",
+                    padding: "120px",
+                    gap: "20px",
+                    borderRadius: "10px"
+                }} container>
+                    <Grid
+                        sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "20px",
+                        }}
+                        item xs={4}>
+                        <CloseIcon sx={{
+                            cursor: "pointer"
+                        }} onClick={() => document.querySelector("#adminForm").style.display = "none"} />
+                        {admin ?
                             <form onSubmit={handleSubmit(submitCotacao)} className="flex flex-col justify-center gap-6 items-center">
                                 <div>
                                     <label htmlFor="fornecedor">Fornecedor</label><br />
@@ -179,38 +199,41 @@ export default function Cotacoes({ produtos, fornecedores, logado, admin, requis
                                     <input type="text" name="preco" {...register("preco")}
                                         className="border-slate-400 border w-96" required />
                                 </div>
-                                <Button variant="contained" type="submit">Adicionar cotação</Button>
+                                {
+                                    requisicaoSelecionada.status === "Cotada"
+                                        ? null
+                                        : <Button variant="contained" type="submit">Adicionar cotação</Button>
+                                }
                             </form>
-                        </Grid>
-                        <Grid sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            flexDirection: "column",
-                        }} item xs={4}>
-                            {cotacoesFiltradas
-                                .map((cotacao) => (
-                                    <div key={cotacao.id}>
-                                        <div className="border-gray-400 border my-2"></div>
-                                        <div className="flex items-center justify-between">
-                                            <div key={cotacao.id}>
-                                                <h3>{cotacao.data}</h3>
-                                                <h3>Fornecedor: {cotacao.fornecedor}</h3>
-                                                <h3>Produto: {cotacao.produto}</h3>
-                                                <h3>Preço: {cotacao.preco}</h3>
-                                            </div>
-                                            <DeleteOutlineIcon sx={{ cursor: "pointer" }}
-                                                onClick={() => {
-                                                    deletaCotacao(cotacao.id);
-                                                    setUpdate(cotacao);
-                                                }} />
+                            : null}
+                    </Grid>
+                    <Grid sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                    }} item xs={4}>
+                        {cotacoesFiltradas
+                            .map((cotacao) => (
+                                <div key={cotacao.id}>
+                                    <div className="border-gray-400 border my-2"></div>
+                                    <div className="flex items-center justify-between">
+                                        <div key={cotacao.id}>
+                                            <h3>{cotacao.data}</h3>
+                                            <h3>Fornecedor: {cotacao.fornecedor}</h3>
+                                            <h3>Produto: {cotacao.produto}</h3>
+                                            <h3>Preço: {cotacao.preco}</h3>
                                         </div>
-                                        <div className="border-gray-400 border my-2"></div>
+                                        {admin ?
+                                            <DeleteOutlineIcon sx={{ cursor: "pointer" }}
+                                                onClick={() => handleDeleteCotacao(cotacao.id)} />
+                                            : null}
                                     </div>
-                                ))}
-                        </Grid>
+                                    <div className="border-gray-400 border my-2"></div>
+                                </div>
+                            ))}
                     </Grid>
                 </Grid>
-            }
+            </Grid>
         </Grid>
     )
 }

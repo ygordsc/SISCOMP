@@ -5,7 +5,6 @@ import {
     createUserWithEmailAndPassword
 } from "firebase/auth";
 
-
 export async function login(email, password, setAcesso) {
     const auth = getAuth();
     signInWithEmailAndPassword(auth, email, password)
@@ -33,14 +32,13 @@ export async function logout() {
 }
 
 
-export async function registrar(email, password) {
+export async function registrar(email, password, setAcesso) {
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            console.log(userCredential)
-            console.log(email)
-            console.log(password)
+        .then(async (userCredential) => {
             const user = userCredential.user;
+            setAcesso(true);
+            window.location.href = "/home";
         })
         .catch((error) => {
             const errorCode = error.code;

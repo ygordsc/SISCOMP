@@ -1,4 +1,4 @@
-import { Grid, Typography } from "@mui/material";
+import { Grid } from "../../components";
 
 export default function Home() {
     return (
@@ -12,8 +12,8 @@ export default function Home() {
                 display: "flex"
             }} 
             item xs={12}>
-                <Typography variant="h2">SISCOMP</Typography>
-                <Typography variant="h3">Sistema de Requisição de Compras</Typography>
+                <h1 className="text-8xl font-bold mb-10">SISCOMP</h1>
+                <h2 className="text-4xl font-bold mb-10">Sistema de Requisição de Compras</h2>
             </Grid>
         </Grid>
     )

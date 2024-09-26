@@ -1,4 +1,4 @@
-export { default as CadastrarCotacao } from "./Cotações";
+export { default as Cotacoes } from "./Cotações";
 export { default as Fornecedores } from "./Fornecedores";
 export { default as Produtos } from "./Produtos";
 export { default as Contatos } from "./Contatos";

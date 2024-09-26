@@ -34,6 +34,9 @@ export default function Login({ setLogado, setAdmin }) {
                                 <input type="password" name="password" id="password" {...register("senha")} className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5" required />
                             </div>
                             <button type="submit" className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Entrar</button>
+                            <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                                Não possui uma conta? <a href="/registrar" className="font-medium text-blue-600 hover:underline">Registrar-se</a>
+                            </p>
                         </form>
                     </div>
                 </div>

@@ -29,7 +29,3 @@ export async function deletaCotacao(id) {
     await deleteDoc(doc(db, "cotacoes", id));
 }
 
-export async function editaCotacao(id, novaCotacao) {
-    console.log(novaCotacao);
-    await updateDoc(doc(db, "cotacoes", id), novaCotacao);
-}

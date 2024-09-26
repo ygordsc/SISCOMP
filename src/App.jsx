@@ -2,21 +2,20 @@ import './App.css'
 import {
   Produtos,
   Fornecedores,
-  CadastrarCotacao,
+  Cotacoes,
   Home,
   Login,
   Registro,
-  Contatos
+  Contatos,
 } from './pages'
 import { Suspense, useEffect, useState } from 'react'
 import { listaFornecedores } from './infra/fornecedores'
 import { listaProdutos } from './infra/produtos'
 import { listaContatos } from './infra/contatos'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { Header, Loading } from './components'
-import Cotacoes from './pages/Cotações'
 import { listaRequisicoes } from './infra/requisicoes'
 import { listaCotacoes } from './infra/cotacoes'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { Header, Loading } from './components'
 
 export default function App() {
 
@@ -55,7 +54,6 @@ export default function App() {
     localStorage.setItem("admin", admin);
   }, [logado, admin])
 
-  //TODO: Implementar a rota default (path="*")
 
   return (
     <Router>
@@ -66,8 +64,11 @@ export default function App() {
           : null
       }
       <Routes>
-        <Route path="/" element={logado || admin ? null : <Login setLogado={setLogado} setAdmin={setAdmin} />} >
-          {
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/registrar" element={logado || admin ? <Navigate to="/home" /> : <Registro setLogado={setLogado} />} />
+        <Route path="/login" element={logado || admin ? <Navigate to="/home" /> : <Login setLogado={setLogado} setAdmin={setAdmin} />} />
+        <Route path="/*" element={logado || admin ? <Navigate to="/home" /> : <Navigate to="/login" />} />
+        {
             logado &&
             <>
               <Route path="/home" element={<Home />} />
@@ -82,10 +83,8 @@ export default function App() {
               <Route path="/fornecedores" element={<Fornecedores fornecedores={fornecedores} setUpdate={setUpdate} />} />
               <Route path="/produtos" element={<Produtos produtos={produtos} setUpdate={setUpdate} />} />
               <Route path="/contatos" element={<Contatos contatos={contatos} fornecedores={fornecedores} setUpdate={setUpdate} />} />
-              <Route path="/registrar" element={<Registro />} />
             </>
           }
-        </Route>
       </Routes>
     </Router>
   )
